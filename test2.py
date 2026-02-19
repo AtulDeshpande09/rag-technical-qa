@@ -10,7 +10,7 @@ from tqdm import tqdm
 # ======================
 # CONFIG
 # ======================
-TEST_FILE = "data/test.json"
+TEST_FILE = "data/test.jsonl"
 MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.2"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
@@ -18,7 +18,7 @@ VECTOR_DB = "vector_db"
 TOP_K = 5
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-OUTPUT_FILE = "results/rag_vanilla_test.json"
+OUTPUT_FILE = "results/rag_vanilla_test.jsonl"
 
 # Reproducibility
 torch.manual_seed(42)
@@ -46,24 +46,24 @@ model = AutoModelForCausalLM.from_pretrained(
 print("Loading retriever...")
 
 embed_model = SentenceTransformer(EMBED_MODEL)
-
 index = faiss.read_index(f"{VECTOR_DB}/index.faiss")
 
 with open(f"{VECTOR_DB}/texts.json", "r", encoding="utf-8") as f:
     texts = json.load(f)
 
 # ======================
-# LOAD DATA
+# LOAD DATA (JSONL)
 # ======================
-with open(TEST_FILE, "r", encoding="utf-8") as f:
-    test_data = json.load(f)
-
 questions = []
 references = []
 
-for item in test_data:
-    questions.append(item["question"])
-    references.append(item["answer"])
+with open(TEST_FILE, "r", encoding="utf-8") as f:
+    for line in f:
+        item = json.loads(line)
+        questions.append(item["question"])
+        references.append(item["answer"])
+
+print(f"Loaded {len(questions)} test samples.")
 
 # ======================
 # LOGGER
@@ -86,8 +86,8 @@ def retrieve_context(question):
     ).astype("float32")
 
     scores, indices = index.search(np.array([q_emb]), TOP_K)
-
     retrieved = [texts[i] for i in indices[0]]
+
     return retrieved
 
 # ======================
@@ -135,11 +135,11 @@ Answer:
 
     return outputs
 
+
 # ======================
 # RUN
 # ======================
 print("Running RAG + Vanilla evaluation...")
-
 predictions = generate_answers(model, tokenizer, questions)
 
 # ======================
@@ -198,17 +198,17 @@ def compute_and_log_metrics(logger, predictions, references):
 compute_and_log_metrics(logger, predictions, references)
 
 # ======================
-# SAVE
+# SAVE JSONL
 # ======================
 os.makedirs("results", exist_ok=True)
 
-results = {
-    "predictions": predictions,
-    "references": references
-}
-
 with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-    json.dump(results, f, indent=2, ensure_ascii=False)
+    for q, pred, ref in zip(questions, predictions, references):
+        f.write(json.dumps({
+            "question": q,
+            "prediction": pred,
+            "reference": ref
+        }, ensure_ascii=False) + "\n")
 
 print("Saved predictions.")
 print("Done.")
