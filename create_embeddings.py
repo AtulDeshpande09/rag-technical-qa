@@ -7,17 +7,19 @@ from sentence_transformers import SentenceTransformer
 # ======================
 # CONFIG
 # ======================
-DATA_FILE = "data/train.json"
+DATA_FILE = "data/train.jsonl"
 DB_PATH = "vector_db"
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 os.makedirs(DB_PATH, exist_ok=True)
 
 # ======================
-# LOAD DATA
+# LOAD DATA (JSONL)
 # ======================
+dataset = []
 with open(DATA_FILE, "r", encoding="utf-8") as f:
-    dataset = json.load(f)
+    for line in f:
+        dataset.append(json.loads(line))
 
 print(f"Loaded {len(dataset)} training samples.")
 
@@ -35,7 +37,11 @@ for item in dataset:
 model = SentenceTransformer(MODEL_NAME)
 
 print("Generating embeddings...")
-embeddings = model.encode(texts, show_progress_bar=True, normalize_embeddings=True)
+embeddings = model.encode(
+    texts,
+    show_progress_bar=True,
+    normalize_embeddings=True
+)
 
 embeddings = np.array(embeddings).astype("float32")
 
@@ -43,7 +49,8 @@ embeddings = np.array(embeddings).astype("float32")
 # FAISS INDEX
 # ======================
 dimension = embeddings.shape[1]
-index = faiss.IndexFlatIP(dimension)  # cosine similarity (normalized)
+index = faiss.IndexFlatIP(dimension)  # cosine similarity
+
 index.add(embeddings)
 
 print("Saving FAISS index...")
@@ -52,6 +59,7 @@ faiss.write_index(index, f"{DB_PATH}/index.faiss")
 # ======================
 # SAVE TEXT METADATA
 # ======================
+# Still JSON (not JSONL) because FAISS metadata is easier this way
 with open(f"{DB_PATH}/texts.json", "w", encoding="utf-8") as f:
     json.dump(texts, f, indent=2, ensure_ascii=False)
 

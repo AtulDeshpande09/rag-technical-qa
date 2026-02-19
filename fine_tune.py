@@ -17,8 +17,8 @@ from logger import ExperimentLogger
 # CONFIG
 # ======================
 MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.2"
-TRAIN_FILE = "data/train.json"
-VAL_FILE = "data/train.json"
+TRAIN_FILE = "data/train.jsonl"
+VAL_FILE = "data/val.jsonl"
 
 OUTPUT_DIR = "models/mistral_lora"
 MERGED_DIR = "models/mistral_merged"
@@ -34,6 +34,7 @@ logger = ExperimentLogger("Fine-tuning LoRA")
 logger.section("CONFIG")
 logger.log(f"Model: {MODEL_NAME}")
 logger.log(f"Train file: {TRAIN_FILE}")
+logger.log(f"Val file: {VAL_FILE}")
 
 
 # ======================
@@ -51,21 +52,24 @@ class LossLoggerCallback(TrainerCallback):
 
 
 # ======================
-# LOAD DATA
+# LOAD JSONL
 # ======================
-with open(TRAIN_FILE, "r", encoding="utf-8") as f:
-    data = json.load(f)
-
-train_dataset = Dataset.from_list(data)
-
-
-with open(VAL_FILE, "r", encoding="utf-8") as f:
-    data = json.load(f)
-
-val_dataset = Dataset.from_list(data)
+def load_jsonl(path):
+    data = []
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            data.append(json.loads(line))
+    return data
 
 
-logger.log(f"Loaded {len(dataset)} training samples")
+train_data = load_jsonl(TRAIN_FILE)
+val_data = load_jsonl(VAL_FILE)
+
+logger.log(f"Loaded {len(train_data)} training samples")
+logger.log(f"Loaded {len(val_data)} validation samples")
+
+train_dataset = Dataset.from_list(train_data)
+val_dataset = Dataset.from_list(val_data)
 
 
 # ======================
@@ -77,7 +81,7 @@ tokenizer.padding_side = "right"
 
 
 # ======================
-# FORMAT PROMPT
+# PROMPT FORMAT
 # ======================
 def format_example(example):
     prompt = f"""
@@ -97,20 +101,22 @@ Answer:
 train_dataset = train_dataset.map(format_example)
 val_dataset = val_dataset.map(format_example)
 
+
 # ======================
-# TOKENIZATION
+# TOKENIZATION + LABELS
 # ======================
 def tokenize(example):
-    return tokenizer(
+    tokens = tokenizer(
         example["text"],
         truncation=True,
         max_length=512,
         padding="max_length"
     )
+    tokens["labels"] = tokens["input_ids"].copy()
+    return tokens
 
 
 tokenized_dataset_train = train_dataset.map(tokenize, batched=True)
-
 tokenized_dataset_val = val_dataset.map(tokenize, batched=True)
 
 logger.log("Tokenization completed")
@@ -136,7 +142,7 @@ model = AutoModelForCausalLM.from_pretrained(
 
 
 # ======================
-# LORA CONFIG
+# LORA
 # ======================
 lora_config = LoraConfig(
     r=16,
@@ -154,7 +160,7 @@ model.print_trainable_parameters()
 
 
 # ======================
-# TRAINING ARGS
+# TRAINING
 # ======================
 training_args = TrainingArguments(
     output_dir="./mistral_qa",
@@ -201,7 +207,7 @@ logger.log("LoRA adapter saved.")
 
 
 # ======================
-# MERGE AND SAVE
+# MERGE
 # ======================
 logger.section("MERGING LORA")
 
