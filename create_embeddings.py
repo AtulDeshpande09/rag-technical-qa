@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer
 # ======================
 # CONFIG
 # ======================
-DATA_FILE = "data/train.jsonl"
+DATA_FILE = "data/data/train.jsonl"
 DB_PATH = "vector_db"
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
