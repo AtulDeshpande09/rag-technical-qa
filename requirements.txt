@@ -1,0 +1,15 @@
+torch
+transformers
+datasets
+accelerate
+peft
+bitsandbytes
+
+sentence-transformers
+faiss-cpu
+
+evaluate
+bert-score
+scikit-learn
+numpy
+tqdm
