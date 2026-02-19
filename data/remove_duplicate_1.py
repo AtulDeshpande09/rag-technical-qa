@@ -1,45 +1,48 @@
 import json
 from logger import write_log
 
-INPUT_FILE = "dataset.json"
-OUTPUT_FILE = "dataset_no_duplicates.json"
+INPUT_FILE = "dataset.jsonl"
+OUTPUT_FILE = "dataset_no_duplicates.jsonl"
 
 
 def normalize(text):
     return text.strip().lower()
 
 
-def remove_exact_duplicates(data):
+def remove_exact_duplicates(input_file, output_file):
     seen = set()
-    filtered = []
+    filtered_count = 0
+    original_count = 0
 
-    for item in data:
-        q = normalize(item["question"])
+    with open(input_file, "r", encoding="utf-8") as fin, \
+         open(output_file, "w", encoding="utf-8") as fout:
 
-        if q not in seen:
-            seen.add(q)
-            filtered.append(item)
+        for line in fin:
+            original_count += 1
+            item = json.loads(line)
 
-    return filtered
+            q = normalize(item["question"])
+
+            if q not in seen:
+                seen.add(q)
+                fout.write(json.dumps(item) + "\n")
+                filtered_count += 1
+
+    return original_count, filtered_count
 
 
-# Load dataset
-with open(INPUT_FILE, "r", encoding="utf-8") as f:
-    dataset = json.load(f)
+# ======================
+# RUN
+# ======================
+write_log("Exact duplicate removal started.")
 
-original_size = len(dataset)
-write_log(f"Exact duplicate removal started. Original size: {original_size}")
+original_size, filtered_size = remove_exact_duplicates(
+    INPUT_FILE, OUTPUT_FILE
+)
 
-filtered_dataset = remove_exact_duplicates(dataset)
-
-filtered_size = len(filtered_dataset)
 removed = original_size - filtered_size
 
+write_log(f"Original size: {original_size}")
 write_log(f"Exact duplicates removed: {removed}")
 write_log(f"New dataset size: {filtered_size}")
-
-# Save
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-    json.dump(filtered_dataset, f, indent=2, ensure_ascii=False)
-
 write_log("Exact duplicate removal completed.\n")

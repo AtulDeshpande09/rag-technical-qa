@@ -1,11 +1,12 @@
 import json
 import random
+import os
 from datetime import datetime
 
 # ======================
 # CONFIG
 # ======================
-INPUT_FILE = "dataset_semantic_filtered.json"
+INPUT_FILE = "dataset_semantic_filtered.jsonl"
 OUTPUT_DIR = "data"
 
 TRAIN_RATIO = 0.7
@@ -13,7 +14,6 @@ VAL_RATIO = 0.15
 TEST_RATIO = 0.15
 
 SEED = 42
-
 LOG_FILE = "preprocessing_log.txt"
 
 
@@ -27,20 +27,26 @@ def write_log(message):
 
 
 # ======================
-# LOAD DATASET
+# LOAD JSONL DATA
 # ======================
+dataset = []
 with open(INPUT_FILE, "r", encoding="utf-8") as f:
-    dataset = json.load(f)
+    for line in f:
+        dataset.append(json.loads(line))
 
 original_size = len(dataset)
-write_log(f"Dataset splitting started. Total samples: {original_size}")
+
+write_log("Dataset splitting started.")
+write_log(f"Total samples: {original_size}")
 write_log(f"Seed used: {SEED}")
+
 
 # ======================
 # SHUFFLE (reproducible)
 # ======================
 random.seed(SEED)
 random.shuffle(dataset)
+
 
 # ======================
 # SPLIT
@@ -52,20 +58,23 @@ train_data = dataset[:train_end]
 val_data = dataset[train_end:val_end]
 test_data = dataset[val_end:]
 
+
 # ======================
-# SAVE FILES
+# SAVE JSONL
 # ======================
-import os
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-with open(f"{OUTPUT_DIR}/train.json", "w", encoding="utf-8") as f:
-    json.dump(train_data, f, indent=2, ensure_ascii=False)
 
-with open(f"{OUTPUT_DIR}/val.json", "w", encoding="utf-8") as f:
-    json.dump(val_data, f, indent=2, ensure_ascii=False)
+def save_jsonl(data, path):
+    with open(path, "w", encoding="utf-8") as f:
+        for item in data:
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
-with open(f"{OUTPUT_DIR}/test.json", "w", encoding="utf-8") as f:
-    json.dump(test_data, f, indent=2, ensure_ascii=False)
+
+save_jsonl(train_data, f"{OUTPUT_DIR}/train.jsonl")
+save_jsonl(val_data, f"{OUTPUT_DIR}/val.jsonl")
+save_jsonl(test_data, f"{OUTPUT_DIR}/test.jsonl")
+
 
 # ======================
 # LOG RESULTS

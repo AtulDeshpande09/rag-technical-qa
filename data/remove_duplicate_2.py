@@ -3,8 +3,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from logger import write_log
 
-INPUT_FILE = "dataset_no_duplicates.json"
-OUTPUT_FILE = "dataset_semantic_filtered.json"
+INPUT_FILE = "dataset_no_duplicates.jsonl"
+OUTPUT_FILE = "dataset_semantic_filtered.jsonl"
 
 SIM_THRESHOLD = 0.90
 
@@ -15,48 +15,49 @@ def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
-def semantic_filter(dataset):
+def semantic_filter(input_file, output_file):
     embeddings = []
-    filtered = []
+    original_count = 0
+    filtered_count = 0
 
-    for item in dataset:
-        question = item["question"]
-        emb = model.encode(question, normalize_embeddings=True)
+    with open(input_file, "r", encoding="utf-8") as fin, \
+         open(output_file, "w", encoding="utf-8") as fout:
 
-        keep = True
-        for prev_emb in embeddings:
-            sim = cosine_similarity(emb, prev_emb)
-            if sim > SIM_THRESHOLD:
-                keep = False
-                break
+        for line in fin:
+            original_count += 1
+            item = json.loads(line)
 
-        if keep:
-            embeddings.append(emb)
-            filtered.append(item)
+            question = item["question"]
+            emb = model.encode(question, normalize_embeddings=True)
 
-    return filtered
+            keep = True
+            for prev_emb in embeddings:
+                sim = cosine_similarity(emb, prev_emb)
+                if sim > SIM_THRESHOLD:
+                    keep = False
+                    break
+
+            if keep:
+                embeddings.append(emb)
+                fout.write(json.dumps(item) + "\n")
+                filtered_count += 1
+
+    return original_count, filtered_count
 
 
-# Load dataset
-with open(INPUT_FILE, "r", encoding="utf-8") as f:
-    dataset = json.load(f)
-
-original_size = len(dataset)
-
+# ======================
+# RUN
+# ======================
 write_log("Semantic filtering started.")
-write_log(f"Original dataset size: {original_size}")
 write_log(f"Similarity threshold: {SIM_THRESHOLD}")
 
-filtered_dataset = semantic_filter(dataset)
+original_size, filtered_size = semantic_filter(
+    INPUT_FILE, OUTPUT_FILE
+)
 
-filtered_size = len(filtered_dataset)
 removed = original_size - filtered_size
 
+write_log(f"Original dataset size: {original_size}")
 write_log(f"Semantic duplicates removed: {removed}")
 write_log(f"Final dataset size: {filtered_size}")
-
-# Save
-with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-    json.dump(filtered_dataset, f, indent=2, ensure_ascii=False)
-
 write_log("Semantic filtering completed.\n")
