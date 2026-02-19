@@ -10,7 +10,7 @@ from tqdm import tqdm
 # ======================
 # CONFIG
 # ======================
-TEST_FILE = "data/test.jsonl"
+TEST_FILE = "data/data/test.jsonl"
 
 FINETUNED_MODEL = "models/mistral_merged"
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
