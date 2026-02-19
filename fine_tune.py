@@ -17,8 +17,8 @@ from logger import ExperimentLogger
 # CONFIG
 # ======================
 MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.2"
-TRAIN_FILE = "data/train.jsonl"
-VAL_FILE = "data/val.jsonl"
+TRAIN_FILE = "data/data/train.jsonl"
+VAL_FILE = "data/data/val.jsonl"
 
 OUTPUT_DIR = "models/mistral_lora"
 MERGED_DIR = "models/mistral_merged"
