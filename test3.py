@@ -7,7 +7,7 @@ from tqdm import tqdm
 # ======================
 # CONFIG
 # ======================
-TEST_FILE = "data/test.jsonl"
+TEST_FILE = "data/data/test.jsonl"
 MODEL_NAME = "models/mistral_merged"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
