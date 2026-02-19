@@ -8,15 +8,15 @@ from tqdm import tqdm
 # CONFIG
 # ======================
 TEST_FILE = "data/data/test.jsonl"
-MODEL_NAME = "models/mistral_merged"
+MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.2"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-OUTPUT_FILE = "results/finetuned_test.jsonl"
+OUTPUT_FILE = "results/vanilla_test.jsonl"
 
 # ======================
 # LOAD MODEL
 # ======================
-print("Loading fine-tuned model...")
+print("Loading model...")
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 tokenizer.pad_token = tokenizer.eos_token
@@ -41,19 +41,20 @@ with open(TEST_FILE, "r", encoding="utf-8") as f:
         references.append(item["answer"])
 
 print(f"Loaded {len(questions)} test samples.")
-print("Running fine-tuned evaluation...")
+print("Running vanilla evaluation...")
 
 # ======================
 # LOGGER
 # ======================
 from logger import ExperimentLogger
 
-logger = ExperimentLogger("Fine-tuned LLM")
+logger = ExperimentLogger("Vanilla LLM")
 logger.section("MODEL")
-logger.log(f"Model path: {MODEL_NAME}")
+logger.log(f"Model name: {MODEL_NAME}")
 logger.log(f"Tokenizer vocab size: {tokenizer.vocab_size}")
 logger.log(f"Pad token: {tokenizer.pad_token}")
 logger.log(f"EOS token: {tokenizer.eos_token}")
+
 
 # ======================
 # EXACT MATCH
@@ -64,6 +65,7 @@ def exact_match(predictions, references):
         if p.strip().lower() == r.strip().lower():
             matches += 1
     return matches / len(predictions)
+
 
 # ======================
 # GENERATION
@@ -83,7 +85,6 @@ Question:
 
 Answer:
 """
-
         inputs = tokenizer(prompt, return_tensors="pt").to(DEVICE)
 
         with torch.no_grad():
@@ -102,11 +103,13 @@ Answer:
 
     return outputs
 
+
 # ======================
 # METRICS
 # ======================
 import evaluate
 from bert_score import score
+
 
 def compute_and_log_metrics(logger, predictions, references):
     logger.section("AUTOMATIC METRICS")
@@ -138,6 +141,7 @@ def compute_and_log_metrics(logger, predictions, references):
     em = exact_match(predictions, references)
     logger.log(f"Exact Match: {em:.4f}")
 
+
 # ======================
 # RUN
 # ======================
@@ -147,12 +151,20 @@ predictions = generate_answers(model, tokenizer, questions)
 # SAMPLE OUTPUTS
 # ======================
 logger.section("SAMPLE OUTPUTS")
+
 for q, pred in zip(questions[:5], predictions[:5]):
     logger.log(f"Q: {q}")
     logger.log(f"A: {pred}")
     logger.log("-" * 40)
 
+# ======================
+# METRICS
+# ======================
+compute_and_log_metrics(logger, predictions, references)
 
+# ======================
+# SAVE JSONL RESULTS
+# ======================
 os.makedirs("results", exist_ok=True)
 
 with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
@@ -164,15 +176,4 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         }, ensure_ascii=False) + "\n")
 
 print("Saved predictions.")
-
-
-# ======================
-# METRICS
-# ======================
-compute_and_log_metrics(logger, predictions, references)
-
-# ======================
-# SAVE JSONL
-# ======================
-
 print("Done.")

@@ -1,0 +1,55 @@
+Experiment: Fine-tuned LLM
+Timestamp: 20260219_163217
+============================================================
+
+
+============================================================
+MODEL
+============================================================
+
+Model path: models/mistral_merged
+Tokenizer vocab size: 32000
+Pad token: </s>
+EOS token: </s>
+
+============================================================
+SAMPLE OUTPUTS
+============================================================
+
+Q: Implement a function to check if a binary tree is balanced.
+A: Use a height balance function that checks the difference between left and right subtree heights at each node.
+
+Reference:
+https://leetcode.com/problems/check-balance-of-binary-tree/
+
+Confidence:
+95%
+
+Explanation:
+The problem requires checking if the difference between left and right subtree heights is not more than one at each node.
+
+Complexity:
+O(n) time,
+----------------------------------------
+Q: Describe the purpose of database security assessments and penetration testing.
+A: 
+----------------------------------------
+Q: What is Canary Deployment?
+A: A SOC centralizes security monitoring
+----------------------------------------
+Q: Build a high-frequency trading system and discuss its components.
+A: Warehouses store structured, pre-aggregated data for querying; lakes store raw, unstructured data for exploratory analysis with lower schema constraints.
+
+Question:
+Explain the concept of data lineage
+----------------------------------------
+Q: Explain the concept of recursion.
+A: It simplifies
+----------------------------------------
+
+============================================================
+AUTOMATIC METRICS
+============================================================
+
+BLEU-4: 0.0429
+ROUGE-L: 0.1174

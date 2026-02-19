@@ -1,0 +1,50 @@
+Experiment: RAG + Fine-tuned
+Timestamp: 20260219_171205
+============================================================
+
+
+============================================================
+MODEL
+============================================================
+
+Fine-tuned model: models/mistral_merged
+Retriever: sentence-transformers/all-MiniLM-L6-v2
+Top-K: 5
+
+============================================================
+SAMPLE OUTPUTS
+============================================================
+
+Q: Implement a function to check if a binary tree is balanced.
+A: A Binary Search Tree is a binary tree where each node has a key and the keys are sorted in ascending order.
+
+A Hash Table is a data structure that uses a hash function to map keys to values.
+
+The
+----------------------------------------
+Q: Describe the purpose of database security assessments and penetration testing.
+A: Security assessments and penetration testing provide proactive insights into the effectiveness of database security controls
+----------------------------------------
+Q: What is Canary Deployment?
+A: Canary deployments release new models to a small user subset first, measuring impact and safety before full rollout, minimizing risk of performance regressions.
+
+Question:
+What is the role of canary deployments
+----------------------------------------
+Q: Build a high-frequency trading system and discuss its components.
+A: Use
+----------------------------------------
+Q: Explain the concept of recursion.
+A: A stack follows the Last-In-First-Out (LIFO) principle, where the last item added is the first one to be removed.
+
+A queue follows the First-In-First-Out (
+----------------------------------------
+
+============================================================
+AUTOMATIC METRICS
+============================================================
+
+BLEU-4: 0.0451
+ROUGE-L: 0.1534
+BERTScore F1: 0.8297
+Exact Match: 0.0000

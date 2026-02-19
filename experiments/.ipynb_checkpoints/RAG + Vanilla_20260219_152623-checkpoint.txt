@@ -1,0 +1,60 @@
+Experiment: RAG + Vanilla
+Timestamp: 20260219_152623
+============================================================
+
+
+============================================================
+MODEL
+============================================================
+
+Generator: mistralai/Mistral-7B-Instruct-v0.2
+Retriever: sentence-transformers/all-MiniLM-L6-v2
+Top-K: 5
+
+============================================================
+SAMPLE OUTPUTS
+============================================================
+
+Q: Implement a function to check if a binary tree is balanced.
+A: To check if a binary tree is balanced, you can use the following recursive function:
+
+```java
+public boolean isBalanced(Node node) {
+    if (node == null) {
+        return true;
+    }
+
+    int leftHeight = height(node.left);
+    int rightHeight = height(node.right);
+
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+        return false
+----------------------------------------
+Q: Describe the purpose of database security assessments and penetration testing.
+A: Database security assessments and penetration testing are crucial for identifying vulnerabilities and weaknesses in a database environment. These activities help organizations proactively address potential security risks and ensure the confidentiality, integrity, and availability of their data.
+
+Vulnerability scanning is a part of the assessment process, which involves using automated tools to scan databases for known vulnerabilities and misconfigurations. This helps organizations prioritize remediation efforts and address issues before they can be exploited.
+----------------------------------------
+Q: What is Canary Deployment?
+A: Canary deployment is a release strategy where a new version is deployed to a small subset of users first, allowing for risk mitigation and performance validation before a full rollout. This approach helps minimize the risk of introducing bugs or performance regressions to all users at once.
+----------------------------------------
+Q: Build a high-frequency trading system and discuss its components.
+A: 1. Data Feed: Real-time market data from exchanges.
+2. Order Router: Sends orders to multiple exchanges for best execution.
+3. Order Management System: Manages orders, tracks fills, and handles risk.
+4. Execution Algorithms: Uses market data to make trading decisions.
+5. Co-location: Placing servers close to exchange servers for faster access.
+6. High-Frequency Hardware: Fast CPUs
+----------------------------------------
+Q: Explain the concept of recursion.
+A: Recursion is a programming technique where a function calls itself repeatedly to solve a problem. The base case is the stopping condition, and the recursive case is the process of breaking down the problem into smaller sub-problems. The function continues to call itself until it reaches the base case, at which point it returns a value. The result from the base case is then propagated back up the call stack, allowing the function to build up the final solution from the smaller sub-proble
+----------------------------------------
+
+============================================================
+AUTOMATIC METRICS
+============================================================
+
+BLEU-4: 0.0515
+ROUGE-L: 0.2269
+BERTScore F1: 0.8900
+Exact Match: 0.0000

@@ -1,0 +1,53 @@
+Experiment: Vanilla LLM
+Timestamp: 20260219_150037
+============================================================
+
+
+============================================================
+MODEL
+============================================================
+
+Model name: mistralai/Mistral-7B-Instruct-v0.2
+Tokenizer vocab size: 32000
+Pad token: </s>
+EOS token: </s>
+
+============================================================
+SAMPLE OUTPUTS
+============================================================
+
+Q: Implement a function to check if a binary tree is balanced.
+A: To check if a binary tree is balanced, we need to define what we mean by "balanced". A common definition is that the height difference between the left and right subtrees of any node cannot be more than 1.
+
+Here's a Python implementation of a function `is_balanced` that checks if a binary tree is balanced based on this definition:
+
+```python
+class TreeNode:
+    def __init__(self, val=0,
+----------------------------------------
+Q: Describe the purpose of database security assessments and penetration testing.
+A: Database security assessments and penetration testing are crucial activities in ensuring the confidentiality, integrity, and availability of data stored in databases. These activities help organizations identify vulnerabilities and weaknesses in their database systems that could be exploited by attackers.
+
+Database security assessments involve reviewing the database architecture, configurations, access controls, and policies to identify potential risks and vulnerabilities. The assessment process may include manual testing, automated scanning, and vulnerability assessments using industry-standard
+----------------------------------------
+Q: What is Canary Deployment?
+A: Canary Deployment is a release strategy used in software development to minimize the risk of introducing new bugs or issues into production. In this approach, a new version of the software is released to a small percentage of users, called the canary group, while the rest of the users continue to use the old version. The canary group is typically a small subset of the total user base, such as 1-5%.
+
+The new version is monitored closely for any signs of inst
+----------------------------------------
+Q: Build a high-frequency trading system and discuss its components.
+A: Building a high-frequency trading (HFT) system involves designing and implementing a complex, low-latency infrastructure for real-time market data processing, order execution, and risk management. Here are the key components of an HFT system:
+
+1. Market Data Feeds: HFT systems require real-time, reliable, and low-latency market data feeds from multiple exchanges. This data is used to identify trading opportunities and execute trades quickly.
+
+2
+----------------------------------------
+Q: Explain the concept of recursion.
+A: Recursion is a programming technique where a function calls itself repeatedly to solve a problem. The base case is the stopping condition, which is a simple enough problem that can be solved directly without recursion. When the function encounters a problem that can't be solved directly, it calls itself with a smaller or simplified version of the problem as an argument. This process continues until the base case is reached, at which point the function returns a value. The returned value is then propagated back
+----------------------------------------
+
+============================================================
+AUTOMATIC METRICS
+============================================================
+
+BLEU-4: 0.0274
