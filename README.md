@@ -4,9 +4,9 @@
 ![Dataset](https://img.shields.io/badge/Dataset-Kaggle-blue)
 ![Blog](https://img.shields.io/badge/Blog-Project%20Writeup-orange)
 
-**Model:** https://huggingface.co/YOUR_HF_LINK
-**Dataset:** https://www.kaggle.com/YOUR_KAGGLE_LINK
-**Blog:** https://YOUR_BLOG_LINK
+**Model:** [HuggingFace 🤗](https://huggingface.co/AtulDeshpande/mistral-interview-assistant) <br>
+**Dataset:** [Kaggle 📊 ](https://www.kaggle.com/datasets/atuldeshpande96/technical-question-answering-dataset) <br>
+**Blog:** [LINK 📝](https://atuldeshpande09.blogspot.com/2026/03/why-rag-beat-fine-tuning-for-technical.html)
 
 ---
 
@@ -62,7 +62,7 @@ Dataset available here:
 
 **Kaggle Dataset**
 
-https://www.kaggle.com/YOUR_KAGGLE_LINK
+[LINK](https://www.kaggle.com/datasets/atuldeshpande96/technical-question-answering-dataset)
 
 ---
 
@@ -86,7 +86,7 @@ Model available here:
 
 **HuggingFace**
 
-https://huggingface.co/YOUR_HF_LINK
+[LINK](https://huggingface.co/AtulDeshpande/mistral-interview-assistant)
 
 ---
 
