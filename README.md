@@ -106,7 +106,7 @@ Answer
 
 ## Training Curve
 
-![Training Loss](visualization/loss_curve.png)
+<img src="visualization/loss_curve.png" width="600">
 
 The LoRA model converges quickly due to the domain-specific dataset.
 
@@ -123,7 +123,7 @@ The LoRA model converges quickly due to the domain-specific dataset.
 
 Metric visualization:
 
-![Metric Comparison](visualization/metrics_comparison.png)
+<img src="visualization/metrics_comparison.png" width="650">
 
 ---
 
