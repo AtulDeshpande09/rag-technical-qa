@@ -10,80 +10,46 @@
 
 ---
 
-## Project Overview
+## Overview
 
 This project investigates the effectiveness of **Retrieval-Augmented Generation (RAG)** and **parameter-efficient fine-tuning (LoRA)** for technical question answering across core Computer Science domains.
 
 We evaluate four configurations of a large language model:
 
-1. **Vanilla Mistral**
-2. **RAG + Vanilla**
-3. **LoRA Fine-Tuned**
-4. **RAG + Fine-Tuned**
+1. Vanilla Mistral
+2. RAG + Vanilla
+3. LoRA Fine-Tuned
+4. RAG + Fine-Tuned
 
-Our experiments reveal an important observation:
+Key finding:
 
-> Retrieval improves both lexical and semantic quality, while aggressive fine-tuning can degrade semantic coherence due to catastrophic forgetting.
+> Retrieval significantly improves both lexical and semantic answer quality, while aggressive fine-tuning can degrade semantic coherence due to catastrophic forgetting.
 
 ---
 
 ## Dataset
 
-The dataset contains **technical interview question–answer pairs** across core CS domains including:
+The dataset contains **technical interview question–answer pairs** across core CS domains such as data structures, operating systems, databases, and computer networks.
 
-* Data Structures & Algorithms
-* Operating Systems
-* Databases
-* Computer Networks
-* System Design
+### Construction & Preprocessing
 
-### Dataset Creation
-
-The dataset was constructed in two stages:
-
-1. **Seed Dataset**
-
-   * ~200 curated Q&A pairs collected from technical interview resources.
-
-2. **Synthetic Expansion**
-
-   * Additional samples generated using **Qwen** to increase domain coverage and diversity.
-
----
-
-### Data Preprocessing
-
-A two-stage filtering pipeline was applied to ensure dataset quality.
-
-**Exact Duplicate Removal**
-
-| Stage                    | Samples |
-| ------------------------ | ------- |
-| Original dataset         | 2070    |
-| Exact duplicates removed | 51      |
-| Remaining samples        | 2019    |
-
-**Semantic Filtering**
-
-Semantic similarity filtering was performed using **MiniLM embeddings**.
+Dataset creation involved seed curation, synthetic expansion, and filtering:
 
 | Stage                       | Samples  |
 | --------------------------- | -------- |
-| Input dataset               | 2019     |
+| Initial dataset             | 2070     |
+| Exact duplicates removed    | 51       |
+| After deduplication         | 2019     |
 | Semantic duplicates removed | 213      |
-| Final dataset               | **1806** |
+| **Final dataset**           | **1806** |
 
-Similarity threshold used:
+Semantic filtering used **MiniLM embeddings** with similarity threshold:
 
 ```
 cosine similarity > 0.9
 ```
 
----
-
 ### Dataset Split
-
-The final dataset was split using a fixed seed for reproducibility.
 
 | Split      | Samples  |
 | ---------- | -------- |
@@ -106,14 +72,14 @@ Base model:
 
 **Mistral-7B-Instruct**
 
-Fine-tuning approach:
+Fine-tuning method:
 
 **LoRA (Low-Rank Adaptation)**
 
-Retrieval system:
+Retrieval pipeline:
 
 * Sentence Transformers (`all-MiniLM-L6-v2`)
-* FAISS vector database
+* FAISS vector index
 * Top-K semantic retrieval
 
 Model available here:
@@ -126,8 +92,6 @@ https://huggingface.co/YOUR_HF_LINK
 
 ## System Architecture
 
-Pipeline:
-
 User Question
 ↓
 Semantic Retrieval (FAISS)
@@ -136,7 +100,7 @@ Context Injection
 ↓
 LLM Generation
 ↓
-Final Answer
+Answer
 
 ---
 
@@ -144,167 +108,87 @@ Final Answer
 
 ![Training Loss](visualization/loss_curve.png)
 
-The LoRA model converges rapidly within a few epochs due to the small domain-specific dataset.
+The LoRA model converges quickly due to the domain-specific dataset.
 
 ---
 
 ## Quantitative Results
 
-| Model             | BLEU-4     | ROUGE-L   | BERTScore F1 | Exact Match |
-| ----------------- | ---------- | --------- | ------------ | ----------- |
-| Vanilla           | 0.0274     | 0.213     | 0.929        | 0.000       |
-| **RAG + Vanilla** | **0.0515** | **0.298** | **0.890**    | **0.007**   |
-| Fine-Tuned        | **0.0561** | 0.287     | 0.889        | 0.007       |
-| RAG + Fine-Tuned  | 0.0380     | 0.252     | 0.871        | 0.003       |
+| Model             | BLEU-4     | ROUGE-L   | BERTScore F1 |
+| ----------------- | ---------- | --------- | ------------ |
+| Vanilla           | 0.0274     | 0.213     | 0.929        |
+| **RAG + Vanilla** | **0.0515** | **0.298** | **0.890**    |
+| Fine-Tuned        | **0.0561** | 0.287     | 0.889        |
+| RAG + Fine-Tuned  | 0.0380     | 0.252     | 0.871        |
 
 Metric visualization:
 
 ![Metric Comparison](visualization/metrics_comparison.png)
 
-### Key Observations
+---
 
-* **RAG improves both lexical and semantic similarity metrics**
-* Fine-tuning improves lexical overlap but harms semantic coherence
-* Combining RAG with a fine-tuned model does **not produce synergistic benefits**
+## Experiments
+
+<details>
+<summary><strong>Vanilla Model</strong></summary>
+
+Base **Mistral-7B-Instruct** used without modification.
+
+</details>
+
+<details>
+<summary><strong>RAG + Vanilla</strong></summary>
+
+Retrieval augmented inference using FAISS with MiniLM embeddings.
+
+</details>
+
+<details>
+<summary><strong>Fine-Tuned Model</strong></summary>
+
+LoRA-based domain adaptation using technical QA dataset.
+
+</details>
+
+<details>
+<summary><strong>RAG + Fine-Tuned</strong></summary>
+
+Retrieval applied on top of LoRA fine-tuned model.
+
+</details>
 
 ---
 
 ## Example Inference
 
-These examples demonstrate the qualitative differences between configurations.
+Examples illustrate the qualitative difference between **RAG + Vanilla** and **RAG + Fine-Tuned**.
 
----
+| Question                      | RAG + Fine-Tuned                                | RAG + Vanilla                            |
+| ----------------------------- | ----------------------------------------------- | ---------------------------------------- |
+| Binary tree balanced check    | Off-topic explanation about BST and hash tables | Recursive height-based solution          |
+| Pathway analysis              | Fragmented output                               | Correct biological pathway explanation   |
+| JWT vs Session Cookies        | Incomplete sentence                             | Correct explanation about stateless APIs |
+| Seasonality in data           | Empty output                                    | Correct time-series explanation          |
+| Multiplayer game architecture | Truncated response                              | Structured client-server architecture    |
 
-### Example 1
-
-**Question**
-
-Implement a function to check if a binary tree is balanced.
-
-**RAG + Fine-Tuned**
-
-```
-A Binary Search Tree is a binary tree where each node has a key and the keys are sorted in ascending order.
-
-A Hash Table is a data structure that uses a hash function to map keys to values.
-```
-
-**RAG + Vanilla**
-
-```
-To check if a binary tree is balanced, you can use the following recursive function:
-
-public boolean isBalanced(Node node) {
-    if (node == null) return true;
-
-    int leftHeight = height(node.left);
-    int rightHeight = height(node.right);
-
-    if (Math.abs(leftHeight - rightHeight) > 1)
-        return false;
-}
-```
-
-Reference
-
-```
-Use a recursive function to check the height of each subtree; return false if the difference is more than one.
-```
-
----
-
-### Example 2
-
-**Question**
-
-Explain pathway analysis.
-
-**RAG + Fine-Tuned**
-
-```
-GO analysis investig
-```
-
-**RAG + Vanilla**
-
-```
-Pathway analysis interprets biological meaning of molecular data by mapping it to known biochemical pathways using databases such as KEGG or Reactome.
-```
-
----
-
-### Example 3
-
-**Question**
-
-When would you choose JWT over Session Cookies?
-
-**RAG + Fine-Tuned**
-
-```
-JWT is a compact,
-```
-
-**RAG + Vanilla**
-
-```
-JWTs are preferred when stateless APIs are used and server-side sessions are undesirable, especially in microservices architectures.
-```
-
----
-
-### Example 4
-
-**Question**
-
-Describe seasonality in data.
-
-**RAG + Fine-Tuned**
-
-*(empty output)*
-
-**RAG + Vanilla**
-
-```
-Seasonality refers to recurring patterns in time series data that occur at regular intervals such as monthly or yearly.
-```
-
----
-
-### Example 5
-
-**Question**
-
-Design a real-time multiplayer online game architecture.
-
-**RAG + Fine-Tuned**
-
-```
-Consider a hybrid architecture combining client-
-```
-
-**RAG + Vanilla**
-
-```
-Use a client-server architecture with real-time state synchronization, load balancing, and horizontal scaling to support large numbers of concurrent players.
-```
+These examples demonstrate how **RAG + Vanilla produces more grounded and coherent responses.**
 
 ---
 
 ## Key Insight
 
-Our experiments reveal a **fine-tuning paradox**:
+The experiments reveal a **fine-tuning paradox**:
 
-* Fine-tuning improves lexical similarity metrics
-* However, semantic coherence degrades
-* Retrieval grounding significantly improves answer quality
+* Fine-tuning improves **lexical overlap metrics**
+* Semantic coherence **degrades due to catastrophic forgetting**
+* Retrieval grounding improves **both lexical and semantic quality**
 
 Therefore:
 
-**RAG + Vanilla LLM provides the most reliable configuration for technical question answering.**
+**RAG + Vanilla LLM provides the most reliable configuration for technical QA tasks.**
 
 ---
 
 ## License
 
-Released for **research and educational purposes**.
+Released for **research and educational use**.
