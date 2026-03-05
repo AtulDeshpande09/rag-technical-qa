@@ -90,20 +90,6 @@ https://huggingface.co/YOUR_HF_LINK
 
 ---
 
-## System Architecture
-
-User Question
-↓
-Semantic Retrieval (FAISS)
-↓
-Context Injection
-↓
-LLM Generation
-↓
-Answer
-
----
-
 ## Training Curve
 
 <img src="visualization/loss_curve.png" width="600">
@@ -172,6 +158,49 @@ Examples illustrate the qualitative difference between **RAG + Vanilla** and **R
 | Multiplayer game architecture | Truncated response                              | Structured client-server architecture    |
 
 These examples demonstrate how **RAG + Vanilla produces more grounded and coherent responses.**
+---
+
+Below are real examples from the evaluation set comparing **RAG + Fine-Tuned** and **RAG + Vanilla** outputs.
+
+These examples illustrate a common failure pattern: the fine-tuned model often produces **truncated or off-topic answers**, while **RAG + Vanilla generates grounded and complete responses**.
+
+---
+
+### Example 1 — Binary Tree Balance Check
+
+**Question**
+
+> Implement a function to check if a binary tree is balanced.
+
+**Reference Answer**
+
+> Use a recursive function to check the height of each subtree; return false if the difference is more than one.
+
+| Model | Output |
+|------|------|
+| **RAG + Fine-Tuned** | "A Binary Search Tree is a binary tree where each node has a key and the keys are sorted in ascending order. A Hash Table is a data structure that uses a hash function..." |
+| **RAG + Vanilla** | Provides a recursive solution that computes left and right subtree heights and checks if the difference exceeds one. |
+
+---
+
+### Example 2 — JWT vs Session Cookies
+
+**Question**
+
+> When would you choose JWT over Session Cookies?
+
+**Reference Answer**
+
+> JWT is stateless and scalable for microservices; Session Cookies are better for immediate revocation and server-side control.
+
+| Model | Output |
+|------|------|
+| **RAG + Fine-Tuned** | "JWT is a compact," *(truncated output)* |
+| **RAG + Vanilla** | Explains that JWTs are preferred for stateless APIs and distributed systems where server-side sessions are not required. |
+
+---
+
+These examples highlight how **retrieval grounding helps the base model generate coherent technical explanations**, while aggressive fine-tuning can introduce **catastrophic forgetting and incomplete responses**.
 
 ---
 
