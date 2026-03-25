@@ -3,7 +3,9 @@
 ![HuggingFace](https://img.shields.io/badge/Model-HuggingFace-yellow)
 ![Dataset](https://img.shields.io/badge/Dataset-Kaggle-blue)
 ![Blog](https://img.shields.io/badge/Blog-Project%20Writeup-orange)
+![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19209658.svg)
 
+**Paper:** [Link 📝](https://zenodo.org/records/19209658)<br>
 **Model:** [HuggingFace 🤗](https://huggingface.co/AtulDeshpande/mistral-interview-assistant) <br>
 **Dataset:** [Kaggle 📊 ](https://www.kaggle.com/datasets/atuldeshpande96/technical-question-answering-dataset) <br>
 **Blog:** [LINK 📝](https://atuldeshpande09.blogspot.com/2026/03/why-rag-beat-fine-tuning-for-technical.html)
